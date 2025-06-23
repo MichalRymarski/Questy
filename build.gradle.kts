@@ -39,7 +39,9 @@ dependencies {
     implementation("org.springframework.integration:spring-integration-websocket")
     implementation("org.springframework.security:spring-security-messaging")
     implementation("org.springframework.session:spring-session-core")
+/*
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+*/
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
@@ -50,6 +52,9 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 }
 
 kotlin {
