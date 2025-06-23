@@ -32,11 +32,10 @@ jobs:
         ./gradlew test > test-results.txt
 
     - name: Upload test results
-      if: ${{ always() }}
       uses: actions/upload-artifact@v4
       with:
         name: test-results
-        path: target/surefire-reports
+        path: build/reports/tests/test
   
     - name: Notify Failure  
       if: ${{ steps.tests.outcome == 'failure' }}
