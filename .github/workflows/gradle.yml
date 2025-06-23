@@ -32,6 +32,7 @@ jobs:
         ./gradlew test > test-results.txt
 
     - name: Upload test results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-results
