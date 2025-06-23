@@ -1,0 +1,296 @@
+name: Test and Deploy to Github Pages
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    
+    - name: Run tests
+      id: tests
+      run: |
+        ./gradlew test
+      continue-on-error: true
+    
+    - name: Generate timestamp
+      id: timestamp
+      run: |
+        echo "timestamp=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
+        echo "readable_time=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
+    
+    - name: Prepare test reports for Pages
+      if: always()
+      run: |
+        # Create the pages directory structure
+        mkdir -p pages/reports/${{ steps.timestamp.outputs.timestamp }}
+        
+        # Copy test reports to timestamped directory
+        if [ -d "build/reports/tests/test" ]; then
+          cp -r build/reports/tests/test/* pages/reports/${{ steps.timestamp.outputs.timestamp }}/
+        fi
+        
+        # Create or update the index page
+        cat > pages/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Test Reports - Questy</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                .header { border-bottom: 2px solid #ddd; padding-bottom: 20px; margin-bottom: 30px; }
+                .report-list { list-style: none; padding: 0; }
+                .report-item { 
+                    background: #f8f9fa; 
+                    margin: 10px 0; 
+                    padding: 15px; 
+                    border-left: 4px solid #007bff;
+                    border-radius: 4px;
+                }
+                .report-item.failed { border-left-color: #dc3545; }
+                .report-item.passed { border-left-color: #28a745; }
+                .report-meta { color: #666; font-size: 0.9em; margin-top: 5px; }
+                .status-badge {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 3px;
+                    font-size: 0.8em;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                }
+                .status-passed { background: #d4edda; color: #155724; }
+                .status-failed { background: #f8d7da; color: #721c24; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>🧪 Test Reports - Questy</h1>
+                <p>Automated test reports from CI/CD pipeline</p>
+            </div>
+            
+            <div class="content">
+                <h2>Recent Test Runs</h2>
+                <ul class="report-list" id="reportList">
+                    <!-- Reports will be inserted here -->
+                </ul>
+            </div>
+            
+            <script>
+                // This will be populated by the GitHub Action
+                const reports = [
+                    // Format: { timestamp, readableTime, status, commit, branch }
+                ];
+                
+                function renderReports() {
+                    const list = document.getElementById('reportList');
+                    list.innerHTML = reports.map(report => `
+                        <li class="report-item ${report.status}">
+                            <div>
+                                <a href="reports/${report.timestamp}/index.html" style="text-decoration: none; color: inherit;">
+                                    <strong>Test Run - ${report.readableTime}</strong>
+                                    <span class="status-badge status-${report.status}">${report.status}</span>
+                                </a>
+                            </div>
+                            <div class="report-meta">
+                                Branch: ${report.branch} | Commit: ${report.commit.substring(0, 8)} | 
+                                <a href="reports/${report.timestamp}/index.html">View Report</a>
+                            </div>
+                        </li>
+                    `).join('');
+                }
+                
+                renderReports();
+            </script>
+        </body>
+        </html>
+        EOF
+    
+    - name: Checkout Pages branch
+      if: always()
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+        path: gh-pages-content
+        token: ${{ secrets.PAT_TOKEN }}
+      continue-on-error: true
+    
+    - name: Setup Pages content
+      if: always()
+      run: |
+        # Create gh-pages-content if it doesn't exist
+        if [ ! -d "gh-pages-content" ]; then
+          mkdir gh-pages-content
+          cd gh-pages-content
+          git init
+          git checkout -b gh-pages
+          cd ..
+        fi
+        
+        # Copy new report to gh-pages content
+        mkdir -p gh-pages-content/reports/${{ steps.timestamp.outputs.timestamp }}
+        if [ -d "pages/reports/${{ steps.timestamp.outputs.timestamp }}" ]; then
+          cp -r pages/reports/${{ steps.timestamp.outputs.timestamp }}/* gh-pages-content/reports/${{ steps.timestamp.outputs.timestamp }}/
+        fi
+        
+        # Determine test status
+        if [ -f "build/reports/tests/test/index.html" ]; then
+          if grep -q "0%" "build/reports/tests/test/index.html"; then
+            TEST_STATUS="failed"
+          else
+            TEST_STATUS="passed"
+          fi
+        else
+          TEST_STATUS="failed"
+        fi
+        
+        # Update or create the index page with report list
+        cat > gh-pages-content/index.html << EOF
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Test Reports - Questy</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                .header { border-bottom: 2px solid #ddd; padding-bottom: 20px; margin-bottom: 30px; }
+                .report-list { list-style: none; padding: 0; }
+                .report-item { 
+                    background: #f8f9fa; 
+                    margin: 10px 0; 
+                    padding: 15px; 
+                    border-left: 4px solid #007bff;
+                    border-radius: 4px;
+                }
+                .report-item.failed { border-left-color: #dc3545; }
+                .report-item.passed { border-left-color: #28a745; }
+                .report-meta { color: #666; font-size: 0.9em; margin-top: 5px; }
+                .status-badge {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 3px;
+                    font-size: 0.8em;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                }
+                .status-passed { background: #d4edda; color: #155724; }
+                .status-failed { background: #f8d7da; color: #721c24; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>🧪 Test Reports - Questy</h1>
+                <p>Automated test reports from CI/CD pipeline</p>
+                <p><em>Last updated: ${{ steps.timestamp.outputs.readable_time }}</em></p>
+            </div>
+            
+            <div class="content">
+                <h2>Latest Test Run</h2>
+                <ul class="report-list">
+                    <li class="report-item \${TEST_STATUS}">
+                        <div>
+                            <a href="reports/${{ steps.timestamp.outputs.timestamp }}/index.html" style="text-decoration: none; color: inherit;">
+                                <strong>Test Run - ${{ steps.timestamp.outputs.readable_time }}</strong>
+                                <span class="status-badge status-\${TEST_STATUS}">\${TEST_STATUS}</span>
+                            </a>
+                        </div>
+                        <div class="report-meta">
+                            Branch: \${GITHUB_REF#refs/heads/} | Commit: \${GITHUB_SHA:0:8} | 
+                            <a href="reports/${{ steps.timestamp.outputs.timestamp }}/index.html">View Report</a>
+                        </div>
+                    </li>
+                </ul>
+                
+                <h2>All Test Reports</h2>
+                <div id="allReports">
+                    <p>Loading previous reports...</p>
+                </div>
+            </div>
+            
+            <script>
+                // List all available reports by scanning the reports directory
+                fetch('reports/')
+                    .then(response => response.text())
+                    .then(html => {
+                        // This is a simple approach - in production you might want a more robust solution
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const links = Array.from(doc.querySelectorAll('a'))
+                            .map(a => a.href)
+                            .filter(href => href.match(/\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}/))
+                            .sort()
+                            .reverse();
+                        
+                        const reportsDiv = document.getElementById('allReports');
+                        if (links.length > 1) {
+                            reportsDiv.innerHTML = links.slice(1).map(link => {
+                                const timestamp = link.match(/(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})/)[1];
+                                const readableTime = timestamp.replace('_', ' ').replace(/-/g, ':').substring(0, 16);
+                                return \`<div class="report-item">
+                                    <a href="reports/\${timestamp}/index.html">Test Run - \${readableTime}</a>
+                                </div>\`;
+                            }).join('');
+                        } else {
+                            reportsDiv.innerHTML = '<p>No previous reports available.</p>';
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('allReports').innerHTML = '<p>Could not load previous reports.</p>';
+                    });
+            </script>
+        </body>
+        </html>
+        EOF
+    
+    - name: Commit and push to gh-pages
+      if: always()
+      run: |
+        cd gh-pages-content
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Add test report for ${{ steps.timestamp.outputs.readable_time }} (commit: ${{ github.sha }})" || exit 0
+        git push origin gh-pages || git push --set-upstream origin gh-pages
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+  # Optional: Deploy using GitHub Pages action (alternative approach)
+  deploy-pages:
+    if: always()
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
