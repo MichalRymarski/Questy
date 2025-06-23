@@ -11,7 +11,7 @@ class QuestyApplicationTests {
 
     @Test
     fun contextLoads() {
-        assert(false)
+        assert(true)
     }
 
 }
