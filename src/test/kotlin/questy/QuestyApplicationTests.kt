@@ -11,8 +11,7 @@ class QuestyApplicationTests {
 
     @Test
     fun contextLoads() {
-        assert(false)
-        // This test is intentionally failing to ensure that CI is working correctly.
+        assert(true)
     }
 
 }

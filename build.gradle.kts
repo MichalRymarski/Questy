@@ -23,6 +23,7 @@ repositories {
 extra["snippetsDir"] = file("build/generated-snippets")
 
 dependencies {
+    val coroutinesVersion = "1.8.1"
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-integration")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -32,6 +33,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.integration:spring-integration-http")
     implementation("org.springframework.integration:spring-integration-jpa")
@@ -43,6 +45,11 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 */
     runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("com.h2database:h2")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${coroutinesVersion}")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -52,6 +59,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
