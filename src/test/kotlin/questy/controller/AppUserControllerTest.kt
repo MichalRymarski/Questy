@@ -48,7 +48,7 @@ class AppUserControllerTest {
     @WithMockUser(username = "user", roles = ["USER"])
     fun `mvc test should return list of users`() {
         //Arrange
-        val mockUsers = listOf("User1", "User2", "User3")
+        val mockUsers = listOf("User3", "User2", "User3")
         whenever(appUserServiceMvc.getAllUsers()).doReturn(mockUsers)
 
         //Act & Assert
