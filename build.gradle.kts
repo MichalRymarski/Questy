@@ -23,6 +23,7 @@ repositories {
 extra["snippetsDir"] = file("build/generated-snippets")
 
 dependencies {
+    implementation("org.testng:testng:6.9.6")
     val coroutinesVersion = "1.8.1"
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-integration")
