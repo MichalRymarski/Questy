@@ -2,10 +2,13 @@ package questy
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
-import java.util.Optional
+import questy.security.JwtConfigProperties
+import java.util.*
 
 @SpringBootApplication
+@EnableConfigurationProperties(value = [JwtConfigProperties::class])
 class QuestyApplication
 
 fun main(args: Array<String>) {
