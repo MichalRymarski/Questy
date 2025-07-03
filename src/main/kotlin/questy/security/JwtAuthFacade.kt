@@ -10,6 +10,7 @@ import questy.dto.auth.LoginResponse
 import questy.exception.type.TokenCreationException
 import questy.logger
 import questy.repository.AppUserRepository
+import java.time.Clock
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -18,7 +19,8 @@ import java.time.ZoneId
 class JwtAuthFacade(
     private val authenticationManager: AuthenticationManager,
     private val properties: JwtConfigProperties,
-    private val userRepository: AppUserRepository
+    private val userRepository: AppUserRepository,
+    private val clock: Clock
 ) {
     val log = logger()
 
@@ -38,7 +40,7 @@ class JwtAuthFacade(
     private fun createToken(user: AppUserDetails): String? {
         val secret = properties.secret
         val algorithm = Algorithm.HMAC256(secret)
-        val localDateTime = LocalDateTime.now().atZone(ZoneId.of("UTC"))
+        val localDateTime = LocalDateTime.now(clock).atZone(ZoneId.of("UTC"))
         val now = localDateTime.toInstant()
         val expireAt = now.plus(Duration.ofHours(properties.hours))
         val issuer = "Questy"

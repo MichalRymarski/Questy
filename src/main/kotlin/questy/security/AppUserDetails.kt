@@ -13,11 +13,9 @@ class AppUserDetails(
     private val credentialsNonExpired = true
     private val enabled = true
 
-
+    fun getId() = appUser.id
     override fun getAuthorities(): Collection<GrantedAuthority?>? = authorities
-
     override fun getPassword(): String? = appUser.password
-
     /**
      * This is an override, but it actually returns email not username (because email is the verification field in login)
      */
