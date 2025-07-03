@@ -7,7 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Component
 import questy.dto.auth.LoginRequest
 import questy.dto.auth.LoginResponse
-import questy.exception.type.TokenCreationException
+import questy.exception.type.auth.TokenCreationException
 import questy.logger
 import questy.repository.AppUserRepository
 import java.time.Clock

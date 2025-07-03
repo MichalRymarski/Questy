@@ -4,12 +4,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import questy.dto.auth.RegisterRequest
 import questy.logger
-import questy.service.AppUserService
+import questy.service.RegisterService
 
 @RestController
 @RequestMapping("/register")
 class RegisterController(
-    private val userService: AppUserService
+    private val registerService: RegisterService,
 ) {
     val log = logger()
 
@@ -19,6 +19,6 @@ class RegisterController(
         @RequestBody
         registerRequest: RegisterRequest
     ) {
-        userService.registerUser(registerRequest)
+        registerService.registerUser(registerRequest)
     }
 }

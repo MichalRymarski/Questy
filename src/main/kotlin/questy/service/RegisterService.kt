@@ -1,17 +1,35 @@
 package questy.service
 
 import org.springframework.stereotype.Service
+import questy.dto.auth.RegisterRequest
+import questy.exception.type.auth.RegistrationValidationException
 import questy.logger
 import questy.repository.AppUserRepository
+import questy.util.mapper.RegisterMapper
 
 
 @Service
 class RegisterService(
-    private val userRepository: AppUserRepository
+    private val registerMapper: RegisterMapper,
+    private val appUserRepository: AppUserRepository
 ) {
     val log = logger()
 
-    fun register() {
-        log.info { "Registering a user" }
+    fun registerUser(registerRequest: RegisterRequest) {
+        val errors = mutableMapOf<String, String>()
+
+        if (appUserRepository.existsByUsername(registerRequest.username)) {
+            errors["username"] = "Username is already taken"
+        }
+        if (appUserRepository.existsByEmail(registerRequest.email)) {
+            errors["email"] = "Email is already registered"
+        }
+        if (errors.isNotEmpty()) {
+            throw RegistrationValidationException(errors)
+        }
+
+        val newUser = registerMapper.fromRequestToAppUser(registerRequest)
+
+        appUserRepository.save(newUser)
     }
 }

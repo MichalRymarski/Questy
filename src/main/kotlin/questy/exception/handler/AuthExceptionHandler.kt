@@ -10,8 +10,8 @@ import questy.controller.LoginController
 import questy.controller.RegisterController
 import questy.dto.auth.LoginErrorResponse
 import questy.dto.auth.RegisterErrorResponse
-import questy.exception.type.RegistrationValidationException
-import questy.exception.type.TokenCreationException
+import questy.exception.type.auth.RegistrationValidationException
+import questy.exception.type.auth.TokenCreationException
 import questy.logger
 
 @ControllerAdvice(assignableTypes = [LoginController::class, RegisterController::class])

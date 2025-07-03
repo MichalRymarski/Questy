@@ -1,3 +1,3 @@
-package questy.exception.type
+package questy.exception.type.auth
 
 class MissingAuthorizationHeaderException(message: String) : RuntimeException(message)

@@ -8,4 +8,5 @@ import questy.data.entity.Project
 
 @Repository
 interface ProjectRepository : JpaRepository<Project, Long>, JpaSpecificationExecutor<Project> {
+    fun existsByName(name: String): Boolean
 }

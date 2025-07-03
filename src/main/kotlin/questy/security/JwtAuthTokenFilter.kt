@@ -15,8 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import questy.exception.type.InvalidJwtTokenException
-import questy.exception.type.MissingAuthorizationHeaderException
+import questy.exception.type.auth.InvalidJwtTokenException
+import questy.exception.type.auth.MissingAuthorizationHeaderException
 import java.io.IOException
 
 

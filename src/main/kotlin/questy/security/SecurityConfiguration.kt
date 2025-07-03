@@ -37,6 +37,8 @@ class SecurityConfiguration(
                     //Auth
                     .requestMatchers("/login").permitAll()
                     .requestMatchers("/register").permitAll()
+                    //Project
+                    .requestMatchers("/project/**").authenticated()
                     //info
                     .requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/error").permitAll()
