@@ -1,9 +1,10 @@
 package questy.security
 
-import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import questy.data.entity.AppUser
 import questy.logger
 import questy.repository.AppUserRepository
 
@@ -23,11 +24,11 @@ class AppUserDetailsService(
         }
         val appUser = userRepo.findByEmail(email!!) ?: throw UsernameNotFoundException("User not found with email $email")
 
-        return getUser(appUser.username, appUser.password)
+        return getUser(appUser, emptyList())
     }
 
     private fun getUser(
-        username: String?,
-        password: String?
-    ) = User(username, password, emptyList()) //TODO : read up upon this
+        appUser: AppUser,
+        authorities: Collection<GrantedAuthority>
+    ) = AppUserDetails(appUser, authorities) //TODO : read up upon this
 }
