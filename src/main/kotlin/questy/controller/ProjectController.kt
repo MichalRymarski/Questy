@@ -15,7 +15,7 @@ class ProjectController(
 ) {
     private val log = logger()
 
-    @PostMapping("/new")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun createNewProject(
         @RequestBody
@@ -23,7 +23,6 @@ class ProjectController(
         @AuthenticationPrincipal
         currentAuthenticatedUser: AppUserDetails
     ) {
-        log.info { "Pinging project creation endpoint" }
         projectService.createNewProject(projectCreationRequest, currentAuthenticatedUser)
     }
 }

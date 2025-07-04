@@ -1,6 +1,7 @@
 package questy.service
 
 import org.springframework.stereotype.Service
+import questy.data.entity.Project
 import questy.dto.project.ProjectCreationRequest
 import questy.exception.type.auth.NullUserInPrincipalException
 import questy.exception.type.project.NonUniqueProjectNameException
@@ -19,7 +20,7 @@ class ProjectService(
     fun createNewProject(
         projectCreationRequest: ProjectCreationRequest,
         currentAuthenticatedUser: AppUserDetails
-    ) {
+    ): Project {
         val currentUserId =
             currentAuthenticatedUser.getId() ?: throw NullUserInPrincipalException("Current user id is null while creating a new project")
         val newProject = projectMapper.fromProjectCreationRequestToProject(projectCreationRequest, currentUserId)
@@ -27,7 +28,7 @@ class ProjectService(
             throw NonUniqueProjectNameException("Project with name ${newProject.name} already exists")
         }
 
-        projectRepository.save(newProject)
+        return projectRepository.save(newProject)
     }
 
 }

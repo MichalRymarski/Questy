@@ -11,11 +11,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import questy.repository.AppUserRepository
 
 @Configuration
 class SecurityConfiguration(
-    private val userRepository: AppUserRepository,
     private val jwtAuthTokenFilter: JwtAuthTokenFilter
 ) {
     @Bean
@@ -24,9 +22,6 @@ class SecurityConfiguration(
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
-
-    @Bean
-    fun userDetailsService() = AppUserDetailsService(userRepository)
 
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
@@ -38,11 +33,11 @@ class SecurityConfiguration(
                     .requestMatchers("/login").permitAll()
                     .requestMatchers("/register").permitAll()
                     //Project
-                    .requestMatchers("/project/**").authenticated()
+                    .requestMatchers("/project", "/project/**").authenticated()
                     //info
                     .requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/error").permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().denyAll()
             }
             .sessionManagement { session -> session.sessionCreationPolicy(STATELESS) }
             .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter::class.java)

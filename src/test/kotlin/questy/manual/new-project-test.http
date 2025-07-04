@@ -1,6 +1,6 @@
 
-@jwt_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTU1NDY5MCwiZXhwIjoxNzUxNTU4MjkwLCJpc3MiOiJRdWVzdHkifQ.MIKpuBzVavBmnbPo5XVpO-quLkwweqeo89CwFXq6KHU
-POST http://localhost:8080/project/new
+@jwt_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTYxODgwNiwiZXhwIjoxNzUxNjIyNDA2LCJpc3MiOiJRdWVzdHkifQ.KPxqijCENBuU0lCJbGH3bxMtgBvX_VtHp6z8ak5koCA
+POST http://localhost:8080/project
 Content-Type: application/json
 Authorization: Bearer {{jwt_token}}
 
