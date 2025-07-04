@@ -23,6 +23,12 @@ class ProjectController(
         @AuthenticationPrincipal
         currentAuthenticatedUser: AppUserDetails
     ) {
+        log.info {
+            """
+            currentAuth : $currentAuthenticatedUser,
+            project: $projectCreationRequest
+        """.trimIndent()
+        }
         projectService.createNewProject(projectCreationRequest, currentAuthenticatedUser)
     }
 }

@@ -1,0 +1,5 @@
+@jwt_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTYxODgwNiwiZXhwIjoxNzUxNjIyNDA2LCJpc3MiOiJRdWVzdHkifQ.KPxqijCENBuU0lCJbGH3bxMtgBvX_VtHp6z8ak5koCA
+GET http://localhost:8080/user
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+

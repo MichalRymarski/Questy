@@ -25,4 +25,7 @@ class AppUserDetails(
     override fun isAccountNonLocked(): Boolean = true
     override fun isCredentialsNonExpired(): Boolean = true
     override fun isEnabled(): Boolean = true
+    override fun toString(): String {
+        return "AppUserDetails(appUser=$appUser, authorities=$authorities)"
+    }
 }

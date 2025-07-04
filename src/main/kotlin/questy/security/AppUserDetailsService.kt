@@ -8,7 +8,6 @@ import questy.data.entity.AppUser
 import questy.logger
 import questy.repository.AppUserRepository
 
-
 class AppUserDetailsService(
     private val userRepo: AppUserRepository,
 ) : UserDetailsService {

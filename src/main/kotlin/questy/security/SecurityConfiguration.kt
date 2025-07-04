@@ -34,10 +34,12 @@ class SecurityConfiguration(
                     .requestMatchers("/register").permitAll()
                     //Project
                     .requestMatchers("/project", "/project/**").authenticated()
+                    //AppUser
+                    .requestMatchers("/user", "/user/**").authenticated()
                     //info
                     .requestMatchers("/actuator/**").permitAll()
                     .requestMatchers("/error").permitAll()
-                    .anyRequest().denyAll()
+                    .anyRequest().authenticated()
             }
             .sessionManagement { session -> session.sessionCreationPolicy(STATELESS) }
             .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter::class.java)

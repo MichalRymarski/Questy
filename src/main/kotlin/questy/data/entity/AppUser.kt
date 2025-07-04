@@ -22,5 +22,8 @@ class AppUser(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     val id: Long? = null
-
-)
+) {
+    override fun toString(): String {
+        return "AppUser(username='$username', email='$email', role=$role)"
+    }
+}
