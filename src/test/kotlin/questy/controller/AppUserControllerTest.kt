@@ -9,12 +9,10 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
-import questy.security.JwtAuthTokenFilter
 import questy.service.AppUserService
 
 //TODO: DELETE AFTER IMPLEMENTING BUSINESS LOGIC
@@ -27,12 +25,6 @@ class AppUserControllerTest {
 
     @MockitoBean
     private lateinit var appUserServiceMvc: AppUserService
-
-    @MockitoBean
-    private lateinit var userDetailsService: UserDetailsService
-
-    @MockitoBean
-    private lateinit var jwtAuthTokenFilter: JwtAuthTokenFilter
 
     private val appUserService = mock<AppUserService>()
     private val controller = AppUserController(appUserService)
@@ -64,8 +56,9 @@ class AppUserControllerTest {
         whenever(appUserServiceMvc.getAllUsers()).doReturn(mockUsers)
 
         //Act & Assert
-        mockMvc.get("/user")
-            .andDo { print() }
+        mockMvc.get("/user") {
+            header("Authorization", "Bearer mock-jwt-token")
+        }
             .andExpect {
                 status { isOk() }
                 content { contentType(MediaType.APPLICATION_JSON) }
